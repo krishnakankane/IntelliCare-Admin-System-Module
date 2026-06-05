@@ -3,18 +3,15 @@
 # =============================================
 
 # ===== STAGE 1: Build =====
-FROM eclipse-temurin:21-jdk-alpine AS builder
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
 
 WORKDIR /build
 
-# Cache dependencies separately from source
 COPY pom.xml .
-COPY .mvn/ .mvn/
-COPY mvnw .
-RUN chmod +x mvnw && ./mvnw dependency:go-offline -q
+RUN mvn dependency:go-offline -q
 
 COPY src ./src
-RUN ./mvnw package -DskipTests -q
+RUN mvn package -DskipTests -q
 
 # ===== STAGE 2: Runtime =====
 FROM eclipse-temurin:21-jre-alpine AS runtime
