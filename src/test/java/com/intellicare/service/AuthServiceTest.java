@@ -40,6 +40,9 @@ class AuthServiceTest {
     @Mock private RefreshTokenRepository refreshTokenRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private JwtUtil jwtUtil;
+    // FIX: AuthServiceImpl now has JwtProperties as a required constructor arg;
+    //      without this mock, @InjectMocks leaves it null → NPE in buildTokenPair()
+    @Mock private JwtProperties jwtProperties;
     @Mock private AuthenticationManager authenticationManager;
     @Mock private AuditLogService auditLogService;
     @Mock private UserMapper userMapper;
@@ -79,6 +82,8 @@ class AuthServiceTest {
         when(userRepository.save(any(User.class))).thenReturn(testUser);
         when(jwtUtil.generateAccessToken(any())).thenReturn("access-jwt-token");
         when(jwtUtil.getExpirationMs()).thenReturn(900_000L);
+        // FIX: jwtProperties.getRefreshExpirationMs() is called inside buildTokenPair()
+        when(jwtProperties.getRefreshExpirationMs()).thenReturn(604_800_000L);
         when(refreshTokenRepository.save(any())).thenReturn(new RefreshToken());
         when(userMapper.toSummary(any())).thenReturn(null);
 
@@ -117,6 +122,7 @@ class AuthServiceTest {
         when(userRepository.findByEmail("test@intellicare.com")).thenReturn(Optional.of(testUser));
         when(jwtUtil.generateAccessToken(any())).thenReturn("access-token");
         when(jwtUtil.getExpirationMs()).thenReturn(900_000L);
+        when(jwtProperties.getRefreshExpirationMs()).thenReturn(604_800_000L);
         when(refreshTokenRepository.save(any())).thenReturn(new RefreshToken());
         when(userMapper.toSummary(any())).thenReturn(null);
 

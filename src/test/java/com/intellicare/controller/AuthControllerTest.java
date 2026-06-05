@@ -9,6 +9,7 @@ import com.intellicare.security.JwtAuthenticationFilter;
 import com.intellicare.security.JwtUtil;
 import com.intellicare.security.UserDetailsServiceImpl;
 import com.intellicare.service.AuthService;
+import com.intellicare.util.RequestUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,8 @@ class AuthControllerTest {
     @MockBean private AuthService authService;
     @MockBean private JwtUtil jwtUtil;
     @MockBean private UserDetailsServiceImpl userDetailsService;
+    // FIX: AuthController injects RequestUtil; must be present in WebMvcTest slice
+    @MockBean private RequestUtil requestUtil;
 
     @Test
     @DisplayName("POST /auth/register — valid request returns 201 with token pair")
